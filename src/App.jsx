@@ -2,6 +2,9 @@ import { useState, useMemo} from 'react';
 import { useInfiniteQuery } from 'react-query';
 import styled from 'styled-components';
 import  Post  from './components/Post/Post';
+import Button from './components/Button/Button';
+import Input from './components/Input/Input';
+import Loading from './components/Loading/Loading';
 
 const Container = styled.div`
   display: flex;
@@ -21,7 +24,7 @@ const Content = styled.div`
 `;
 
 const getPosts = async ( { pageParam, title = ""}) => {
-  const titleParam = title ? `&title=${title, toLowerCase()}` : "";
+  const titleParam = title ? `&title=${title.toLowerCase()}` : "";
 
   return await fetch(
     `https://jsonplaceholder.typicode.com/posts?_page=${pageParam}${titleParam}`
@@ -29,9 +32,11 @@ const getPosts = async ( { pageParam, title = ""}) => {
 };
 
 const App = () => {
+  const [title, setTitle] = useState("");
+
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery(
-    ["/Posts"],
-    ({ pageParam = 1}) => getPosts({ pageParam }),
+    ["/posts", [title]],
+    ({ pageParam = 1}) => getPosts({ pageParam, title }),
     {
       getNextPageParam: (lastPage, allPages) => {
         return lastPage.length ? allPages.length + 1 : undefined;
@@ -47,11 +52,24 @@ const App = () => {
 
   return (
     <Container>
+      <Input 
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        placeholder="Filtre por um título"
+      />
       <Content>
         {items?.map((item, i) => (
           <Post key={i} item={item}/>
         ))}
       </Content>
+
+      {( isLoading || isFetchingNextPage ) && <Loading />}
+
+      {hasNextPage && !title && (
+        <Button onClick={fetchNextPage} disabled={isFetchingNextPage}>
+          {isFetchingNextPage ? "carregando" : "Carregar mais"}
+        </Button>
+      )}
     </Container>
   )
 }
