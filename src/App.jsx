@@ -1,7 +1,7 @@
 import { useState, useMemo} from 'react';
 import { useInfiniteQuery } from 'react-query';
 import styled from 'styled-components';
-import  Post  from './components/Post';
+import  Post  from './components/Post/Post';
 
 const Container = styled.div`
   display: flex;
@@ -21,7 +21,7 @@ const Content = styled.div`
 `;
 
 const getPosts = async ( { pageParam, title = ""}) => {
-  const titleParam = title ? `&title=${tittle, toLowerCase()}` : "";
+  const titleParam = title ? `&title=${title, toLowerCase()}` : "";
 
   return await fetch(
     `https://jsonplaceholder.typicode.com/posts?_page=${pageParam}${titleParam}`
