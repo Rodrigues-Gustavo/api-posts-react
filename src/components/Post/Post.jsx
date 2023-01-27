@@ -6,6 +6,8 @@ const Container = styled.div`
     flex-direction: column;
     box-shadow: 0 1px 2px;
     padding: 10px;
+    border-radius: 8px;
+    color: #c400fa;
 `;
 
 const Title = styled.h3`
