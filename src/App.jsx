@@ -1,7 +1,7 @@
 import { useState, useMemo} from 'react';
 import { useInfiniteQuery } from 'react-query';
 import styled from 'styled-components';
-import { Post } from './components/Post';
+import  Post  from './components/Post';
 
 const Container = styled.div`
   display: flex;
@@ -20,10 +20,38 @@ const Content = styled.div`
   width: 80%;
 `;
 
+const getPosts = async ( { pageParam, title = ""}) => {
+  const titleParam = title ? `&title=${tittle, toLowerCase()}` : "";
+
+  return await fetch(
+    `https://jsonplaceholder.typicode.com/posts?_page=${pageParam}${titleParam}`
+  ).then((res) => res.json());
+};
+
 const App = () => {
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery(
+    ["/Posts"],
+    ({ pageParam = 1}) => getPosts({ pageParam }),
+    {
+      getNextPageParam: (lastPage, allPages) => {
+        return lastPage.length ? allPages.length + 1 : undefined;
+      }
+    }
+  );
+
+  const items = useMemo(() => {
+    return data?.pages.reduce((acc, page) => {
+      return [...acc, ...page];
+    }, [])
+  }, [data]);
+
   return (
     <Container>
-      <Content></Content>
+      <Content>
+        {items?.map((item, i) => (
+          <Post key={i} item={item}/>
+        ))}
+      </Content>
     </Container>
   )
 }
